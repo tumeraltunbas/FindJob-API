@@ -8,6 +8,7 @@ config({path:"./config/config.env"});
 const app = express();
 
 connectDb();
+app.use(express.json());
 app.use("/api",routes);
 app.use(errorHandler);
 
