@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 
 const UserSchema = new mongoose.Schema({
@@ -181,6 +182,16 @@ const UserSchema = new mongoose.Schema({
         type:Date,
         default:Date.now()
     },
+});
+
+UserSchema.pre("save", function(next){
+    if(this.isModified("password")){
+        const salt = bcrypt.genSalt();
+        const hash = bcrypt.hashSync(this.password, salt);
+        this.password = hash;
+        next();
+    }
+    next();
 });
 
 
