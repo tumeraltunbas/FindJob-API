@@ -1,0 +1,36 @@
+import CustomError from "../helpers/error/CustomError.js";
+import { mailHelper } from "../helpers/mail/mailHelper.js";
+import { User } from "../models/User.js";
+
+export const register = async(req, res, next) => {
+    try{
+        const {firstName, lastName, email, password, gender, dateOfBirth, role} = req.body;
+        const {COOKIE_EXPIRES, NODE_ENV, DOMAIN, SMTP_USER} = process.env;
+        const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+        if(role != "employee" && role != "employer"){ //avoid potential exploit
+            return next(new CustomError(400, "Invalid role"));
+        }
+
+        if(!passwordRegex.test(password)){
+            return next(new CustomError(400, "Password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character."));
+        }
+
+        const user = await User.create({firstName:firstName, lastName:lastName, email:email, password:password, gender:gender, dateOfBirth:dateOfBirth,role:role});
+        const jwtToken = user.createJwt();
+        const emailVerificationToken = user.createEmailVerificationToken();
+        await user.save();
+
+        const emailVerificationLink = `${DOMAIN}/auth/emailVerification?emailVerificationToken=${emailVerificationToken}`;
+        mailHelper({from:SMTP_USER, to:user.email, subject:"Email Verification", html:`<p>You email verification <a href='${emailVerificationLink}'>link</a></p>`});
+
+        return res
+            .cookie("access_token", jwtToken, {maxAge: Number(COOKIE_EXPIRES), httpOnly: NODE_ENV === "development" ? true : false})
+            .status(200)
+            .json({success:true, message:`Your email confirmation link sent to ${user.email}`});
+        
+    }
+    catch(err){
+        return next(err);
+    }
+}
