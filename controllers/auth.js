@@ -21,7 +21,7 @@ export const register = async(req, res, next) => {
         const emailVerificationToken = user.createEmailVerificationToken();
         await user.save();
 
-        const emailVerificationLink = `${DOMAIN}/auth/emailVerification?emailVerificationToken=${emailVerificationToken}`;
+        const emailVerificationLink = `${DOMAIN}/api/auth/emailVerification?emailVerificationToken=${emailVerificationToken}`;
         mailHelper({from:SMTP_USER, to:user.email, subject:"Email Verification", html:`<p>You email verification <a href='${emailVerificationLink}'>link</a></p>`});
 
         return res
@@ -29,6 +29,29 @@ export const register = async(req, res, next) => {
             .status(200)
             .json({success:true, message:`Your email confirmation link sent to ${user.email}`});
         
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const emailVerification = async(req, res, next) => {
+    try{
+        const {emailVerificationToken} = req.query;
+        const user = await User.findOne({emailVerificationToken:emailVerificationToken, emailVerificationTokenExpires: {$gt: Date.now()}});
+        
+        if(!user){
+            return next(new CustomError(400, "Your email verification token wrong or expired"));
+        }
+
+        await user.updateOne({
+            emailVerificationToken:null, 
+            emailVerificationTokenExpires:null, 
+            isEmailVerified:true, 
+            emailVerifiedAt:Date.now()
+        });
+
+        return res.status(200).json({success:true, message:"Your email has been verified"});
     }
     catch(err){
         return next(err);
