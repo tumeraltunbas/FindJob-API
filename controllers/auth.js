@@ -8,13 +8,12 @@ export const register = async(req, res, next) => {
     try{
         const {firstName, lastName, email, password, gender, dateOfBirth, role} = req.body;
         const {COOKIE_EXPIRES, NODE_ENV, DOMAIN, SMTP_USER} = process.env;
-        const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
         if(role != "employee" && role != "employer"){ //avoid potential exploit
             return next(new CustomError(400, "Invalid role"));
         }
 
-        if(!passwordRegex.test(password)){
+        if(!checkPassword(password)){
             return next(new CustomError(400, "Password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character."));
         }
 
