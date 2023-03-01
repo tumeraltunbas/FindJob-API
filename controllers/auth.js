@@ -88,6 +88,18 @@ export const login = async(req, res, next) => {
     }
 }
 
+export const logout = (req, res, next )=> {
+    try{
+        return res
+        .cookie("access_token", null, {maxAge: Date.now()})
+        .status(200)
+        .json({success:true});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
 export const forgotPassword = async(req, res, next) => {
     try{
         const {email} = req.body;
