@@ -176,7 +176,10 @@ export const changePassword = async(req, res, next) => {
         user.lastPasswordChangedAt = Date.now();
         await user.save();
 
-        return res.status(200).json({success:true, message:"Your password has been changed"});
+        return res
+        .cookie("access_token", null, {maxAge: Date.now()})
+        .status(200)
+        .json({success:true, message:"Your password has been changed"}); //fresh loging
     }
     catch(err){
         return next(err);
