@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { generate } from "randomstring";
+import { createToken } from "../helpers/utils/utils.js";
 
 
 const UserSchema = new mongoose.Schema({
@@ -197,13 +197,19 @@ UserSchema.methods.createJwt = function(){
 
 UserSchema.methods.createEmailVerificationToken = function(){
     const {EMAIL_VERIFICATION_CODE_EXPIRES} = process.env;
-    const randomString = generate(20);
-    const salt = bcrypt.genSaltSync();
-    const hash = bcrypt.hashSync(randomString, salt);
-    this.emailVerificationToken = hash;
+    const token = createToken();
+    this.emailVerificationToken = token;
     this.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_CODE_EXPIRES));
     return hash;
 };
+
+UserSchema.methods.createResetPasswordToken = function(){
+    const {RESET_PASSWORD_TOKEN_EXPIRES} = process.env;
+    const token = createToken();
+    this.resetPasswordToken = token;
+    this.emailVerificationTokenExpires = new Date(Date.now() + Number(RESET_PASSWORD_TOKEN_EXPIRES));
+    return token;
+}
 
 //Hooks
 UserSchema.pre("save", function(next){
