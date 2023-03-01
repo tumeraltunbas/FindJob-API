@@ -182,3 +182,27 @@ export const changePassword = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const deactiveAccount = async(req, res, next) => {
+    try{
+        const {password} = req.body;
+        
+        if(!password){
+            return next(new CustomError(400, "You have to enter your password"));
+        }
+        const user = await User.findOne({_id:req.user.id}).select("_id password isActive");
+        
+        if(!bcrypt.compareSync(password, user.password)){
+            return next(new CustomError(400, "Invalid password"));
+        }
+        await user.update({isActive:false});
+
+        return res
+        .cookie("access_token", null, {maxAge: Date.now()})
+        .status(200)
+        .json({success:true, message:"Your account has been deactivated"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
