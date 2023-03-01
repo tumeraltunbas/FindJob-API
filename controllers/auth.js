@@ -2,6 +2,7 @@ import CustomError from "../helpers/error/CustomError.js";
 import { mailHelper } from "../helpers/mail/mailHelper.js";
 import { User } from "../models/User.js";
 import bcrypt from "bcryptjs";
+import { checkPassword } from "../helpers/utils/utils.js";
 
 export const register = async(req, res, next) => {
     try{
@@ -102,5 +103,42 @@ export const forgotPassword = async(req, res, next) => {
     catch(err){
         return next(err);
     }
-    
+
 } 
+
+export const resetPassword = async(req, res, next) => {
+    try{
+        const {resetPasswordToken} = req.query;
+        const {password} = req.body;
+
+        if(!resetPasswordToken){
+            return next(new CustomError(400, "There is no reset password token"));
+        }
+
+        const user = await User.findOne(
+            {$and : [
+            {resetPasswordToken:resetPasswordToken}, 
+            {resetPasswordTokenExpires: {$gt: Date.now()}}]})
+            .select("resetPasswordToken resetPasswordTokenExpires password"
+        )
+        
+        if(!user){
+            return next(new CustomError(400, "Your reset password token wrong or expired"));
+        }
+
+        if(!checkPassword(password)){
+            return next(new CustomError(400, "Password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"))
+        }
+
+        user.password = password;
+        user.resetPasswordToken = null;
+        user.resetPasswordTokenExpires = null;
+        user.lastPasswordChangedAt = Date.now();
+        await user.save();
+        
+        return res.status(200).json({success:true, message:"Your password has been changed"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
