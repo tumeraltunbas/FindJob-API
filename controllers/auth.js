@@ -14,7 +14,7 @@ export const register = async(req, res, next) => {
             return next(new CustomError(400, "Invalid role"));
         }
 
-        if(!checkPassword(password)){
+        if(!passwordRegex.test(password)){
             return next(new CustomError(400, "Password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character."));
         }
 
