@@ -89,12 +89,18 @@ export const login = async(req, res, next) => {
 }
 
 export const forgotPassword = async(req, res, next) => {
-    const {email} = req.body;
-    const {DOMAIN, SMTP_USER} = process.env;
-    const user = await User.findOne({email:email}).select("_id email resetPasswordToken resetPasswordTokenExpires");
-    const token = user.createResetPasswordToken();
-    await user.save();
-    const resetPasswordLink = `${DOMAIN}/api/auth/resetPassword?resetPasswordToken=${token}`;
-    mailHelper({from:SMTP_USER, to:email, subject:"Reset Password", html:`<p>Your password reset <a href='${resetPasswordLink}'>link</a></p>`});
-    return res.status(200).json({success:true, message:`Reset password link sent to ${email}`});
+    try{
+        const {email} = req.body;
+        const {DOMAIN, SMTP_USER} = process.env;
+        const user = await User.findOne({email:email}).select("_id email resetPasswordToken resetPasswordTokenExpires");
+        const token = user.createResetPasswordToken();
+        await user.save();
+        const resetPasswordLink = `${DOMAIN}/api/auth/resetPassword?resetPasswordToken=${token}`;
+        mailHelper({from:SMTP_USER, to:email, subject:"Reset Password", html:`<p>Your password reset <a href='${resetPasswordLink}'>link</a></p>`});
+        return res.status(200).json({success:true, message:`Reset password link sent to ${email}`});            
+    }
+    catch(err){
+        return next(err);
+    }
+    
 } 
