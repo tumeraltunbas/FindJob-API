@@ -141,3 +141,32 @@ export const resetPassword = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const changePassword = async(req, res, next) => {
+    try{
+        const {currentPassword, currentPasswordAgain, newPassword} = req.body;
+        const user = await User.findOne({_id:req.user.id}).select("_id password lastPasswordChanged");
+        
+        if(currentPassword != currentPasswordAgain) {
+            return next(CustomError(400, "These passwords do not match"));
+        }
+        console.log("burada");
+
+        if(!bcrypt.compareSync(currentPassword, user.password)){
+            return next(new CustomError(400, "Your old password is wrong"));
+        }
+
+        if(!checkPassword(newPassword)){
+            return next(new CustomError(400, "Password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"));
+        }
+
+        user.password = newPassword;
+        user.lastPasswordChangedAt = Date.now();
+        await user.save();
+
+        return res.status(200).json({success:true, message:"Your password has been changed"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
