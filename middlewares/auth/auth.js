@@ -12,7 +12,6 @@ export const getAccessToRoute = (req, res, next) => {
         if(err){
             return next(new CustomError(401, "You can not access this route"));
         }
-        console.log(decoded);
         req.user = {
             id:decoded.id,
         };
