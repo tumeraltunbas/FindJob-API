@@ -189,7 +189,6 @@ UserSchema.methods.createJwt = function(){
     const {JWT_SECRET_KEY, JWT_EXPIRES} = process.env;
     const payload = {
         id:this._id,
-        email:this.email
     };    
     const token = jwt.sign(payload, JWT_SECRET_KEY, {expiresIn:JWT_EXPIRES});
     return token;
@@ -207,7 +206,7 @@ UserSchema.methods.createResetPasswordToken = function(){
     const {RESET_PASSWORD_TOKEN_EXPIRES} = process.env;
     const token = createToken();
     this.resetPasswordToken = token;
-    this.emailVerificationTokenExpires = new Date(Date.now() + Number(RESET_PASSWORD_TOKEN_EXPIRES));
+    this.resetPasswordTokenExpires = new Date(Date.now() + Number(RESET_PASSWORD_TOKEN_EXPIRES));
     return token;
 }
 
