@@ -7,3 +7,13 @@ export const createToken = () => {
     const hash = bcrypt.hashSync(randomString, salt);
     return hash;
 }
+
+export const checkPassword = (password) => {
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+    if(!passwordRegex.test(password)){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
