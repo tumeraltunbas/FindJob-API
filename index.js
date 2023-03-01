@@ -3,11 +3,13 @@ import { config } from "dotenv";
 import { connectDb } from "./helpers/database/dbConnection.js";
 import { errorHandler } from "./middlewares/error/errorHandler.js";
 import routes from "./routes/index.js";
+import cookieParser from "cookie-parser";
 
 config({path:"./config/config.env"});
 const app = express();
 
 connectDb();
+app.use(cookieParser());
 app.use(express.json());
 app.use("/api",routes);
 app.use(errorHandler);
