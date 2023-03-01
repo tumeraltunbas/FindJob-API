@@ -1,6 +1,7 @@
 import CustomError from "../helpers/error/CustomError.js";
 import { mailHelper } from "../helpers/mail/mailHelper.js";
 import { User } from "../models/User.js";
+import bcrypt from "bcryptjs";
 
 export const register = async(req, res, next) => {
     try{
@@ -52,6 +53,35 @@ export const emailVerification = async(req, res, next) => {
         });
 
         return res.status(200).json({success:true, message:"Your email has been verified"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const login = async(req, res, next) => {
+    try{
+        const {email, password} = req.body;
+        const {COOKIE_EXPIRES, NODE_ENV} = process.env;
+        
+        if(!email && !password){
+            return next(new CustomError(400, "You have to provide credentials"));
+        }
+
+        const user = await User.findOne({email:email}).select("_id password isEmailVerified");
+        if(user.isEmailVerified != true){
+            return next(new CustomError(400, "You must confirm your email before you can continue"));
+        }
+
+        if(!bcrypt.compareSync(password, user.password)){
+            return next(new CustomError(400, "Check your credentials"));
+        }
+
+        const jwtToken = user.createJwt();
+        return res
+            .cookie("access_token", jwtToken, {maxAge: Number(COOKIE_EXPIRES), httpOnly: NODE_ENV === "development" ? true : false})
+            .status(200)
+            .json({success:true});
     }
     catch(err){
         return next(err);
