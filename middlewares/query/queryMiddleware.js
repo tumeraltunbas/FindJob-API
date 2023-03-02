@@ -14,3 +14,28 @@ export const isUserExist = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const isWorkExperienceExists = async(req, res, next) => {
+    try{
+        const {workExperienceId} = req.params;
+
+        const workExperience = await User.findOne(
+            {_id:req.user.id, 
+                workExperiences: 
+                {
+                    $elemMatch: {_id:workExperienceId}
+                } 
+            }
+        )
+        .select("_id workExperiences");
+        
+        if(!workExperience){
+            return next(new CustomError(400, "There is no work experience with that id"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
