@@ -6,11 +6,11 @@ import { isUserExist } from "../middlewares/query/queryMiddleware.js";
 const router = Router();
 
 router.post("/register", register);
-router.get("/emailVerification", emailVerification);
+router.get("/email-verification", emailVerification);
 router.post("/login", isUserExist, login);
 router.get("/logout", getAccessToRoute, logout);
-router.post("/forgotPassword", isUserExist, forgotPassword);
-router.post("/resetPassword", resetPassword);
-router.post("/changePassword", getAccessToRoute, changePassword);
+router.post("/forgot-password", isUserExist, forgotPassword);
+router.post("/reset-password", resetPassword);
+router.post("/change-password", getAccessToRoute, changePassword);
 router.post("/deactivate", getAccessToRoute, deactiveAccount);
 export default router;

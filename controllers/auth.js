@@ -22,7 +22,7 @@ export const register = async(req, res, next) => {
         const emailVerificationToken = user.createEmailVerificationToken();
         await user.save();
 
-        const emailVerificationLink = `${DOMAIN}/api/auth/emailVerification?emailVerificationToken=${emailVerificationToken}`;
+        const emailVerificationLink = `${DOMAIN}/api/auth/email-verification?emailVerificationToken=${emailVerificationToken}`;
         mailHelper({from:SMTP_USER, to:user.email, subject:"Email Verification", html:`<p>You email verification <a href='${emailVerificationLink}'>link</a></p>`});
 
         return res
@@ -107,7 +107,7 @@ export const forgotPassword = async(req, res, next) => {
         const user = await User.findOne({email:email}).select("_id email resetPasswordToken resetPasswordTokenExpires");
         const token = user.createResetPasswordToken();
         await user.save();
-        const resetPasswordLink = `${DOMAIN}/api/auth/resetPassword?resetPasswordToken=${token}`;
+        const resetPasswordLink = `${DOMAIN}/api/auth/reset-password?resetPasswordToken=${token}`;
         mailHelper({from:SMTP_USER, to:email, subject:"Reset Password", html:`<p>Your password reset <a href='${resetPasswordLink}'>link</a></p>`});
         return res.status(200).json({success:true, message:`Reset password link sent to ${email}`});            
     }
