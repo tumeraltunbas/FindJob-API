@@ -212,7 +212,7 @@ UserSchema.methods.createEmailVerificationToken = function(){
     const token = createToken();
     this.emailVerificationToken = token;
     this.emailVerificationTokenExpires = new Date(Date.now() + Number(EMAIL_VERIFICATION_CODE_EXPIRES));
-    return hash;
+    return token;
 };
 
 UserSchema.methods.createResetPasswordToken = function(){
