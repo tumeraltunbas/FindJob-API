@@ -96,6 +96,10 @@ const UserSchema = new mongoose.Schema({
             description: {
                 type:String,
                 default:null
+            },
+            isVisible:{
+                type:Boolean,
+                default:true
             }
         }
     ],
@@ -126,6 +130,10 @@ const UserSchema = new mongoose.Schema({
                 type:Date,
                 required:[true, "Ended At can not be null"]
             },
+            isVisible:{
+                type:Boolean,
+                default:true
+            }
         }
     ],
     certificates: [{
@@ -140,6 +148,10 @@ const UserSchema = new mongoose.Schema({
         date: {
             type: Date,
             required:[true, "Date can not be null"]
+        },
+        isVisible:{
+            type:Boolean,
+            default:true
         }
     }],
     emailVerificationToken: {
