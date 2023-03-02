@@ -12,7 +12,10 @@ export const updatePersonalInformations = async(req, res, next) => {
             }
         }
 
-        await User.findByIdAndUpdate({_id:req.user.id}, {
+        await User.findByIdAndUpdate(
+            {_id:req.user.id}, 
+            
+            {
             "personalInformations.about":about,
             "personalInformations.website":website,
             "personalInformations.state":state,
@@ -22,6 +25,32 @@ export const updatePersonalInformations = async(req, res, next) => {
 
         return res.status(200).json({success:true, message:"Personal Informations has been updated"});
         
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const addWorkExperience = async(req, res, next) => {
+    try{
+        const {title, companyName, employmentType, location, startedAt, endedAt, description} = req.body;
+
+        await User.findOneAndUpdate(
+            {_id:req.user.id},
+
+            { $push: {"workExperiences": {
+                title:title,
+                companyName:companyName,
+                employmentType:employmentType,
+                location:location,
+                startedAt:startedAt,
+                endedAt:endedAt,
+                description:description 
+            }}}
+        );
+ 
+        return res.status(200).json({success:true, message:"Work experience added"});
+
     }
     catch(err){
         return next(err);
