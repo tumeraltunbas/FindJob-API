@@ -67,12 +67,45 @@ export const deleteWorkExperience = async(req, res, next) => {
             
             if(experience._id == workExperienceId){
                 experience.isVisible = false;
+                break;
             }
         }
 
         await user.save();
         
         return res.status(200).json({success:true, message:"Your work experience has been deleted"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const updateWorkExperience = async(req, res, next) => {
+    try{
+        const {workExperienceId} = req.params;
+        const {title, companyName, employmentType, location, startedAt, endedAt, description} = req.body;
+        
+        const user = await User.findOne({_id:req.user.id}).select("_id workExperiences");
+        
+        for(var experience of user.workExperiences){
+            
+            if(experience._id == workExperienceId){
+
+                experience.title = title;
+                experience.companyName = companyName;
+                experience.employmentType = employmentType;
+                experience.location = location;
+                experience.startedAt = startedAt;
+                experience.endedAt = endedAt;
+                experience.description = description;
+                
+                break;
+            }
+        }
+        
+        await user.save();
+
+        return res.status(200).json({success:true, message:"Your work experience has been updated"});
     }
     catch(err){
         return next(err);
