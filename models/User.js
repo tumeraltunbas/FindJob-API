@@ -92,6 +92,7 @@ const UserSchema = new mongoose.Schema({
             },
             endedAt:{
                 type:Date,
+                default:null
             },
             description: {
                 type:String,
