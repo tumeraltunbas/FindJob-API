@@ -30,6 +30,19 @@ const CompanySchema = mongoose.Schema({
         type:String,
         default:null,   
     },
+    user: {
+        type:mongoose.Schema.ObjectId,
+        ref:"User",
+        required:[true, "User can not be null"]
+    },
+    isVisible: {
+        type:Boolean,
+        default:true
+    },
+    createdAt: {
+        type:Date,
+        default: Date.now()
+    },
 });
 
 export const Company = mongoose.model("Company", CompanySchema);
