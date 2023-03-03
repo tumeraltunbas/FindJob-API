@@ -31,55 +31,6 @@ export const updatePersonalInformations = async(req, res, next) => {
     }
 }
 
-export const addWorkExperience = async(req, res, next) => {
-    try{
-        const {title, companyName, employmentType, location, startedAt, endedAt, description} = req.body;
-
-        await User.findOneAndUpdate(
-            {_id:req.user.id},
-
-            { $push: {"workExperiences": {
-                title:title,
-                companyName:companyName,
-                employmentType:employmentType,
-                location:location,
-                startedAt:startedAt,
-                endedAt:endedAt,
-                description:description 
-            }}}
-        );
- 
-        return res.status(200).json({success:true, message:"Work experience added"});
-
-    }
-    catch(err){
-        return next(err);
-    }
-}
-
-export const deleteWorkExperience = async(req, res, next) => {
-    try{
-        const {workExperienceId} = req.params;
-        
-        const user = await User.findOne({_id:req.user.id}).select("_id workExperiences");
-
-        for(var experience of user.workExperiences){
-            
-            if(experience._id == workExperienceId){
-                experience.isVisible = false;
-                break;
-            }
-        }
-
-        await user.save();
-        
-        return res.status(200).json({success:true, message:"Your work experience has been deleted"});
-    }
-    catch(err){
-        return next(err);
-    }
-}
-
 export const updateWorkExperience = async(req, res, next) => {
     try{
         const {workExperienceId} = req.params;
