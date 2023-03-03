@@ -1,6 +1,7 @@
 import CustomError from "../../helpers/error/CustomError.js";
 import jwt from "jsonwebtoken";
 import {User} from "../../models/User.js";
+import { Experience } from "../../models/Experience.js";
 
 export const getAccessToRoute = (req, res, next) => {
     const {JWT_SECRET_KEY} = process.env;
@@ -21,4 +22,25 @@ export const getAccessToRoute = (req, res, next) => {
         }
         next();
     });
+}
+
+export const getExperienceOwnerAccess = async(req, res, next) => {
+    try{
+        const {experienceId} = req.params;
+        
+        const experience = await Experience.findOne({
+            _id:experienceId,
+            isVisible:true
+        })
+        .select("_id user");
+
+        if(experience.user != req.user.id){
+            return next(new CustomError(403, "You are not owner of this experience"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
 }
