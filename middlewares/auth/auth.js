@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import {User} from "../../models/User.js";
 import { Experience } from "../../models/Experience.js";
 import { Education } from "../../models/Education.js";
+import { Certificate } from "../../models/Certificate.js";
 
 export const getAccessToRoute = (req, res, next) => {
     const {JWT_SECRET_KEY} = process.env;
@@ -58,6 +59,27 @@ export const getEducationOwnerAccess = async(req, res, next) => {
 
         if(education.user != req.user.id){
             return next(new CustomError(403, "You are not owner of this education"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const getCertificateOwnerAccess = async(req ,res, next) => {
+    try{
+        const {certificateId} = req.params;
+        
+        const certificate = await Certificate.findOne({
+            _id:certificateId,
+            isVisible:true
+        })
+        .select("_id user");
+
+        if(certificate.user != req.user.id){
+            return next(new CustomError(403, "You are not owner of this certificate"));
         }
 
         next();
