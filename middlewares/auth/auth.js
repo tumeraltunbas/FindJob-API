@@ -4,6 +4,7 @@ import {User} from "../../models/User.js";
 import { Experience } from "../../models/Experience.js";
 import { Education } from "../../models/Education.js";
 import { Certificate } from "../../models/Certificate.js";
+import { Company } from "../../models/Company.js";
 
 export const getAccessToRoute = (req, res, next) => {
     const {JWT_SECRET_KEY} = process.env;
@@ -97,6 +98,25 @@ export const getEmployerAccess = async(req, res, next) => {
 
         if(user.role != "employer"){
             return next(new CustomError(403, "You can not access this route because you are not employer"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const getCompanyOwnerAccess = async(req, res, next) => {
+    try{
+        const {companyId} = req.params;
+
+        const company = await Company.findOne({
+            _id:companyId
+        }).select("_id user");
+    
+        if(company.user != req.user.id){
+            return next(new CustomError(403, "You are not owner of this company"));
         }
 
         next();
