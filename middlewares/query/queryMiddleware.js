@@ -1,13 +1,20 @@
 import CustomError from "../../helpers/error/CustomError.js";
+import { Experience } from "../../models/Experience.js";
 import { User } from "../../models/User.js";
 
 export const isUserExist = async(req, res, next) => {
     try{
         const {email} = req.body;
-        const user = await User.findOne({email:email}).select("_id");
+
+        const user = await User.findOne({
+            email:email
+        })
+        .select("_id");
+        
         if(!user){
             return next(new CustomError(400, "There is no user with that email"));
         }
+        
         next();
     }
     catch(err){
@@ -15,21 +22,17 @@ export const isUserExist = async(req, res, next) => {
     }
 }
 
-export const isWorkExperienceExists = async(req, res, next) => {
+export const isExperienceExists = async(req, res, next) => {
     try{
-        const {workExperienceId} = req.params;
+        const {experienceId} = req.params;
 
-        const workExperience = await User.findOne(
-            {_id:req.user.id, 
-                workExperiences: 
-                {
-                    $elemMatch: {_id:workExperienceId}
-                } 
-            }
-        )
-        .select("_id workExperiences");
-        
-        if(!workExperience){
+        const experience = await Experience.findOne({
+            _id:experienceId,
+            isVisible:true
+        })
+        .select("_id")
+
+        if(!experience){
             return next(new CustomError(400, "There is no work experience with that id"));
         }
 
