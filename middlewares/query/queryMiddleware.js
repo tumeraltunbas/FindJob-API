@@ -1,4 +1,5 @@
 import CustomError from "../../helpers/error/CustomError.js";
+import { Certificate } from "../../models/Certificate.js";
 import { Education } from "../../models/Education.js";
 import { Experience } from "../../models/Experience.js";
 import { User } from "../../models/User.js";
@@ -55,6 +56,26 @@ export const isEducationExists = async(req, res, next) => {
 
         if(!education){
             return next(new CustomError(400, "There is no education with that id"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const isCertificateExist = (req, res, next) => {
+    try{
+        const {certificateId} = req.params;
+        
+        const certificate = Certificate.findOne({
+            _id:certificateId,
+            isVisible:true
+        });
+
+        if(!certificate) {
+            return next(new CustomError(400, "There is no certificate with that id"));
         }
 
         next();
