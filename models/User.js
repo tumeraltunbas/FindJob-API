@@ -67,94 +67,24 @@ const UserSchema = new mongoose.Schema({
             default:null
         }
     },
-    workExperiences: [
+    experiences: [
         {
-            title: {
-                type:String,
-                required:[true, "Title can not be null"],
-            },
-            companyName: {
-                type:String,
-                required:[true, "Company Name can not be null"]
-            },
-            employmentType: {
-                type:String,
-                required:[true, "Employment type can not be null"],
-                enum: ["Full Time", "Part Time", "Internship", "My Job"],
-            },
-            location: {
-                type:String,
-                required:[true, "Location can not be null"],
-            },
-            startedAt: {
-                type:Date,
-                required:[true, "Started At can not be null"]
-            },
-            endedAt:{
-                type:Date,
-                default:null
-            },
-            description: {
-                type:String,
-                default:null
-            },
-            isVisible:{
-                type:Boolean,
-                default:true
-            }
+            type:mongoose.Schema.ObjectId,
+            ref:"Experience"
         }
     ],
-    educationalInformations: [
+    educations: [
         {
-            schoolName: {
-                type:String,
-                required:[true, "School Name can not be null"]
-            },
-            degree: {
-                type:String,
-                required:[true, "Degree can not be null"],
-                enum:["Bachelor's Degree", "Associate Degree", "Master's Degree", "Doctoral Degree", "Highschool Degree"]
-            },
-            major: {
-                type:String,
-                required:[true, "Major can not be null"]
-            },
-            gpa: {
-                type: Number,
-                default:null
-            },
-            startedAt: {
-                type:Date,
-                required:[true, "Started At can not be null"]
-            },
-            endedAt:{
-                type:Date,
-                required:[true, "Ended At can not be null"]
-            },
-            isVisible:{
-                type:Boolean,
-                default:true
-            }
+            type: mongoose.Schema.ObjectId,
+            ref:"Education"
         }
     ],
-    certificates: [{
-        title:{
-            type:String,
-            required:[true, "Title can not be null"]
-        },
-        institution: {
-            type: String,
-            required:[true, "Institution can not be null"],
-        },
-        date: {
-            type: Date,
-            required:[true, "Date can not be null"]
-        },
-        isVisible:{
-            type:Boolean,
-            default:true
+    certificates: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref:"Certificate"
         }
-    }],
+    ],
     emailVerificationToken: {
         type:String,
         default:null
