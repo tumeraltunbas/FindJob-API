@@ -30,6 +30,10 @@ const CompanySchema = mongoose.Schema({
         type:String,
         default:null,   
     },
+    slug:{
+        type:String,
+        required:[true, "Slug can not be null"]
+    },
     user: {
         type:mongoose.Schema.ObjectId,
         ref:"User",
