@@ -27,3 +27,5 @@ const CertificateSchema = new mongoose.Schema({
         default:Date.now()
     }
 });
+
+export const Certificate = mongoose.model("Certificate", CertificateSchema);
