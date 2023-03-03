@@ -88,3 +88,20 @@ export const getCertificateOwnerAccess = async(req ,res, next) => {
         return next(err);
     }
 }
+
+export const getEmployerAccess = async(req, res, next) => {
+    try{
+        const user = await User.findOne({
+            _id:req.user.id
+        }).select("_id role");
+
+        if(user.role != "employer"){
+            return next(new CustomError(403, "You can not access this route because you are not employer"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
