@@ -125,3 +125,22 @@ export const getCompanyOwnerAccess = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const getEmployeeAccess = async(req, res, next) => {
+    try{
+
+        const user = await User.findOne({
+            _id:req.user.id,
+            isActive:true
+        }).select("_id role");
+
+        if(user.role != "employee"){
+            return next(new CustomError(400, "You can not access this route because you are not an employee"));
+        }
+
+        next();
+    } 
+    catch(err){
+        return next(err);
+    }
+}
