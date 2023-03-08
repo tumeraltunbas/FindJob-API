@@ -5,6 +5,7 @@ import experienceRoutes from "./experience.js";
 import educationRoutes from "./education.js";
 import certificateRoutes from "./certificate.js";
 import companyRoutes from "./company.js";
+import jobRoutes from "./job.js";
 
 const router = Router();
 router.use("/auth", authRoutes);
@@ -13,5 +14,6 @@ router.use("/experience", experienceRoutes);
 router.use("/education", educationRoutes);
 router.use("/certificate", certificateRoutes);
 router.use("/company", companyRoutes);
+router.use("/job", jobRoutes);
 
 export default router;
