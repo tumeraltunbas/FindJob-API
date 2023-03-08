@@ -28,6 +28,10 @@ const JobSchema = new mongoose.Schema({
             ref: "User"
         }
     ],
+    appliedUserCount: {
+        type:String,
+        default:0
+    },
     company: {
         type: mongoose.Schema.ObjectId,
         required:[true, "Created by can not null"],
