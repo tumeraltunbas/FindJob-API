@@ -29,7 +29,7 @@ const JobSchema = new mongoose.Schema({
         }
     ],
     appliedUserCount: {
-        type:String,
+        type:Number,
         default:0
     },
     company: {
