@@ -16,11 +16,11 @@ const JobSchema = new mongoose.Schema({
     employmentType: {
         type:String,
         required:[true, "Employment type can not be null"],
-        enum: ["Full-Time", "Part-Time", "Internship", "My-Job"],
+        enum: ["Full-Time", "Part-Time", "Internship", "Remote"],
     },
     location: {
         type:String,
-        required:[true, "Location can not be null"]
+        default:null
     },  
     appliedUsers: [
         {
