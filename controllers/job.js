@@ -8,7 +8,8 @@ export const getJobs = async(req, res, next) => {
         .populate({
             path:"Company", 
             select: "name logoUrl"
-        });
+        })
+        .select("_id title employmentType location createdAt");
 
         return res.status(200).json({success:true, jobs:jobs});
     }
@@ -16,6 +17,36 @@ export const getJobs = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const getJob = async(req, res, next) => {
+    try{
+        const {jobId} = req.params;
+
+        const job = await Job.findOne({
+            _id:jobId,
+        })
+        .select(`
+            _id
+            title 
+            jobDescription
+            qualifications
+            employmentType
+            location
+            company
+            createdAt
+        `)
+        .populate({
+            path:"company",
+            select:"name logoUrl"
+        });
+
+        return res.status(200).json({success:true, job:job});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
 
 export const createJob = async(req, res, next) => {
     try{
