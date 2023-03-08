@@ -1,9 +1,10 @@
 import {Router} from "express";
-import { getJobs } from "../controllers/job.js";
-import { getAccessToRoute } from "../middlewares/auth/auth.js";
+import { createJob, getJobs } from "../controllers/job.js";
+import { getAccessToRoute, getEmployerAccess } from "../middlewares/auth/auth.js";
 
 const router = Router();
 
 router.get("/", getAccessToRoute, getJobs);
+router.post("/", [getAccessToRoute, getEmployerAccess], createJob);
 
 export default router;
