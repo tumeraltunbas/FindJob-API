@@ -2,6 +2,7 @@ import CustomError from "../../helpers/error/CustomError.js";
 import { Certificate } from "../../models/Certificate.js";
 import { Education } from "../../models/Education.js";
 import { Experience } from "../../models/Experience.js";
+import { Job } from "../../models/Job.js";
 import { User } from "../../models/User.js";
 
 export const isUserExist = async(req, res, next) => {
@@ -52,7 +53,7 @@ export const isEducationExists = async(req, res, next) => {
         const education = await Education.findOne({
             _id:educationId,
             isVisible:true
-        });
+        }).select("_id");
 
         if(!education){
             return next(new CustomError(400, "There is no education with that id"));
@@ -65,17 +66,37 @@ export const isEducationExists = async(req, res, next) => {
     }
 }
 
-export const isCertificateExist = (req, res, next) => {
+export const isCertificateExist = async(req, res, next) => {
     try{
         const {certificateId} = req.params;
         
-        const certificate = Certificate.findOne({
+        const certificate = await Certificate.findOne({
             _id:certificateId,
             isVisible:true
-        });
+        }).select("_id");
 
         if(!certificate) {
             return next(new CustomError(400, "There is no certificate with that id"));
+        }
+
+        next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const isJobExists = async(req, res, next) => {
+    try{
+        const {jobId} = req.params;
+
+        const job = await Job.findOne({
+            _id:jobId,
+            isVisible:true
+        }).select("_id");
+
+        if(!job){
+            return next(new CustomError(400, "There is no job with that id"));
         }
 
         next();
