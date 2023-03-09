@@ -62,3 +62,46 @@ export const updateWorkExperience = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const getProfile = async(req, res, next) => {
+    try{
+
+        const {username} = req.params;
+        
+        const user = await User.findOne({
+            username:username,
+            isActive:true
+        })
+        .select(`
+            firstName
+            lastName
+            username
+            email
+            dateOfBirth
+            gender
+            profilePhotoUrl
+            personalInformations
+            experiences
+            educations
+            certificates
+        `)
+        .populate({
+            path:"experiences", 
+            select:"-user -isVisible -createdAt"
+        })
+        .populate({
+            path:"educations",
+            select:"-user -isVisible -createdAt"
+        })
+        .populate({
+            path:"certificates",
+            select:"-user -isVisible -createdAt"
+        });
+
+        return res.status(200).json({success:true, user:user});
+
+    }
+    catch(err){
+        return next(err);
+    }
+}
