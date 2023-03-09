@@ -132,3 +132,22 @@ export const unApplyJob = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const getAppliedUsers = async(req, res, next) => {
+    try{
+        const {jobId} = req.params;
+
+        const job = await Job.findOne({ 
+            _id:jobId,
+            isVisible:true
+        })
+        .select("_id appliedUsers appliedUserCount")
+        .populate({path:"appliedUsers", select:"firstName lastName email dateOfBirth gender"});
+
+        return res.status(200).json({success:true, job:job});
+        
+    }
+    catch(err){
+        return next(err);
+    }
+}
