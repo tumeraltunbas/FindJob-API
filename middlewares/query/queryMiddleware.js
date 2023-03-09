@@ -7,12 +7,16 @@ import { User } from "../../models/User.js";
 
 export const isUserExist = async(req, res, next) => {
     try{
-        const {email} = req.body;
+        const key = req.body.email || req.body.username || req.params.username;
 
         const user = await User.findOne({
-            email:email
-        })
-        .select("_id");
+            $or: [ 
+                { email:key  }, 
+                { username: key } 
+            ],
+            isActive:true
+            
+        }).select("_id");
         
         if(!user){
             return next(new CustomError(400, "There is no user with that email"));
