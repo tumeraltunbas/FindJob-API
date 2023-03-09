@@ -1,6 +1,7 @@
 import CustomError from "../helpers/error/CustomError.js";
 import { Company } from "../models/Company.js";
 import slugify from "slugify";
+import { Job } from "../models/Job.js";
 
 export const createCompany = async(req, res, next) => {
     try{
@@ -85,16 +86,23 @@ export const getCompany = async(req, res, next) => {
             isVisible:true
         })
         .select(`
+            _id
             name
             slogan
             about
             sector
             location
             logoUrl
+            coverUrl
             website
         `);
 
-        return res.status(200).json({success:true, company:company});
+        const jobs = await Job.find({
+            company:company.id
+        })
+        .select("title location appliedUserCount createdAt");
+
+        return res.status(200).json({success:true, company:company, jobs:jobs});
     }
     catch(err){
         return next(err);
