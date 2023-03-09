@@ -1,5 +1,6 @@
 import CustomError from "../../helpers/error/CustomError.js";
 import { Certificate } from "../../models/Certificate.js";
+import { Company } from "../../models/Company.js";
 import { Education } from "../../models/Education.js";
 import { Experience } from "../../models/Experience.js";
 import { Job } from "../../models/Job.js";
@@ -104,6 +105,28 @@ export const isJobExists = async(req, res, next) => {
         }
 
         next();
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const isCompanyExists = async(req, res, next) =>{
+    try{
+        const {slug} = req.params;
+
+        const company = await Company.findOne({
+            slug:slug,
+            isVisible:true
+        })
+        .select("_id");
+
+        if(company){
+            return next(new CustomError(400, "There is no company with that slug"));
+        }
+
+        next();
+
     }
     catch(err){
         return next(err);
