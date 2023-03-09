@@ -26,6 +26,10 @@ const CompanySchema = mongoose.Schema({
         type:String,
         default:"logo.png",
     },
+    coverUrl: {
+        type:String,
+        default:"cover.png"
+    },
     website: {
         type:String,
         default:null,   
