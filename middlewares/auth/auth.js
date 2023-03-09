@@ -5,6 +5,7 @@ import { Experience } from "../../models/Experience.js";
 import { Education } from "../../models/Education.js";
 import { Certificate } from "../../models/Certificate.js";
 import { Company } from "../../models/Company.js";
+import { Job } from "../../models/Job.js";
 
 export const getAccessToRoute = (req, res, next) => {
     const {JWT_SECRET_KEY} = process.env;
@@ -140,6 +141,36 @@ export const getEmployeeAccess = async(req, res, next) => {
 
         next();
     } 
+    catch(err){
+        return next(err);
+    }
+}
+
+export const getJobOwnerAccess = async(req, res, next) => {
+    try{
+        const {jobId} = req.params;
+
+        const job = await Job.findOne({
+            _id:jobId,
+            isVisible:true
+        }).select("_id company");
+
+        if(!job){
+            return next(new CustomError(400, "There is no job with that id"));
+        }
+
+        const company = await Company.findOne({
+            user:req.user.id,
+            isVisible:true
+        }).select("_id");
+
+        if(job.company != company.id){
+            return next(new CustomError(400, "This job has not been published by you. Therefore you can not access this route"));
+        }
+
+        next();
+        
+    }
     catch(err){
         return next(err);
     }
