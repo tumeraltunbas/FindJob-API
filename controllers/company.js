@@ -75,3 +75,28 @@ export const updateCompany = async(req, res, next) => {
         return next(err);
     }
 }
+
+export const getCompany = async(req, res, next) => {
+    try{
+        const {slug} = req.params;
+
+        const company = await Company.findOne({
+            slug:slug,
+            isVisible:true
+        })
+        .select(`
+            name
+            slogan
+            about
+            sector
+            location
+            logoUrl
+            website
+        `);
+
+        return res.status(200).json({success:true, company:company});
+    }
+    catch(err){
+        return next(err);
+    }
+}
