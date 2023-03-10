@@ -1,4 +1,5 @@
 import CustomError from "../helpers/error/CustomError.js";
+import { mailHelper } from "../helpers/mail/mailHelper.js";
 import { Company } from "../models/Company.js";
 import { Job } from "../models/Job.js";
 
@@ -146,6 +147,41 @@ export const getAppliedUsers = async(req, res, next) => {
 
         return res.status(200).json({success:true, job:job});
         
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const reachUser = async(req, res, next) => {
+    try{
+        const {jobId, userId} = req.params;
+        const {text} = req.body;
+        const {SMTP_USER} = process.env;
+
+        const job = await Job.findOne({
+            _id:jobId,
+            appliedUsers:userId
+        })
+        .select("_id title jobId appliedUsers")
+        .populate({path:"appliedUsers", select:"_id email"})
+        .populate({path:"company", select:"_id name"});
+        
+        if(!job){
+            return next(new CustomError(400, "This user did not apply for this job"));
+        }
+
+        const mailOptions = {
+            from:SMTP_USER,
+            to: job.appliedUsers[0].email,
+            subject: `About your job application for ${job.title} at ${job.company.name}`,
+            html: `<p>${text}</p>`
+        };
+
+        mailHelper(mailOptions);
+
+        return res.status(200).json({success:true, message: `Your email has been sent`});
+
     }
     catch(err){
         return next(err);
