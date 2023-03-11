@@ -2,6 +2,7 @@ import CustomError from "../helpers/error/CustomError.js";
 import { Company } from "../models/Company.js";
 import slugify from "slugify";
 import { Job } from "../models/Job.js";
+import { fileUploadHelper } from "../helpers/fileUpload/fileUpload.js";
 
 export const createCompany = async(req, res, next) => {
     try{
@@ -30,6 +31,24 @@ export const createCompany = async(req, res, next) => {
         });
 
         return res.status(200).json({success:true, message:"Company has been created"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const uploadLogo = async(req, res, next) => {
+    try{
+        const fileName = fileUploadHelper(req, next);
+        
+        await Company.findOneAndUpdate(
+            {user:req.user.id},
+            {
+                logo:fileName
+            }
+        );
+        
+        return res.status(200).json({success:true, message:"Logo has been uploaded"});
     }
     catch(err){
         return next(err);
