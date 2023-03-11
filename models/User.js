@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         required:[true, "Gender can not be null"]
     },
+    interests: {
+        type: Array,
+        default:null
+    },
     role: {
         type:String,
         enum: ["employer", "employee", "admin"],
