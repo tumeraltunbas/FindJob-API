@@ -3,6 +3,24 @@ import { fileUploadHelper } from "../helpers/fileUpload/fileUpload.js";
 import { Job } from "../models/Job.js";
 import {User} from "../models/User.js";
 
+export const chooseInterests = async(req, res, next) => {
+    try{
+        const {interests} = req.body;
+        
+        await User.findOneAndUpdate(
+            {_id:req.user.id},
+            {
+                interests: interests
+            }
+        );
+
+        return res.status(200).json({success:true});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
 export const updatePersonalInformations = async(req, res, next) => {
     try{
         const {about, website, state, city, isMarried} = req.body;
