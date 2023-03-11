@@ -44,11 +44,29 @@ export const uploadLogo = async(req, res, next) => {
         await Company.findOneAndUpdate(
             {user:req.user.id},
             {
-                logo:fileName
+                logoUrl:fileName
             }
         );
-        
         return res.status(200).json({success:true, message:"Logo has been uploaded"});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+
+export const uploadCover = async(req, res, next) => {
+    try{
+        const fileName = fileUploadHelper(req, next);
+
+        await Company.findOneAndUpdate(
+            {user: req.user.id},
+            {
+                coverUrl:fileName
+            }
+        );
+
+        return res.status(200).json({success:true, message:"Cover has been uploaded"});
     }
     catch(err){
         return next(err);
