@@ -10,6 +10,14 @@ export const createCompany = async(req, res, next) => {
         
         const modifiedSlug = slugify(slug, {lower:true});
 
+        const userHasCompany = await Company.findOne({
+            user:req.user.id
+        }).select("_id");
+
+        if(userHasCompany){
+            return next(new CustomError(400, "You can not create another company because you have already one"));
+        }
+
         const company = await Company.findOne({
             slug:modifiedSlug
         }).select("_id slug");
