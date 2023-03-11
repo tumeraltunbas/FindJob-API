@@ -1,4 +1,5 @@
 import CustomError from "../helpers/error/CustomError.js";
+import { fileUploadHelper } from "../helpers/fileUpload/fileUpload.js";
 import { Job } from "../models/Job.js";
 import {User} from "../models/User.js";
 
@@ -84,6 +85,24 @@ export const getAppliedJobs = async(req, res, next) => {
         .populate({path:"company", select:"name logoUrl"})
 
         return res.status(200).json({success:true, data:jobs});
+    }
+    catch(err){
+        return next(err);
+    }
+}
+
+export const uploadPhoto = async(req, res, next) => {
+    try{
+        const fileName = fileUploadHelper(req, next);
+        
+        await User.findOneAndUpdate(
+            {_id:req.user.id},
+            {
+                profilePhotoUrl:fileName
+            }
+        );
+
+        return res.status(200).json({success:true, message:"Your profile photo has been uploaded"});
     }
     catch(err){
         return next(err);
