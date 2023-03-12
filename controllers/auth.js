@@ -17,13 +17,28 @@ export const register = async(req, res, next) => {
             return next(new CustomError(400, "Password must contain: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character."));
         }
 
-        const user = await User.create({firstName:firstName, lastName:lastName, email:email, password:password, gender:gender, dateOfBirth:dateOfBirth,role:role});
+        const user = await User.create({
+            firstName:firstName, 
+            lastName:lastName, 
+            email:email, 
+            password:password, 
+            gender:gender, 
+            dateOfBirth:dateOfBirth,
+            role:role
+        });
+
         const jwtToken = user.createJwt();
         const emailVerificationToken = user.createEmailVerificationToken();
         await user.save();
 
         const emailVerificationLink = `${DOMAIN}/api/auth/email-verification?emailVerificationToken=${emailVerificationToken}`;
-        mailHelper({from:SMTP_USER, to:user.email, subject:"Email Verification", html:`<p>You email verification <a href='${emailVerificationLink}'>link</a></p>`});
+       
+        mailHelper({
+            from:SMTP_USER, 
+            to:user.email, 
+            subject:"Email Verification", 
+            html:`<p> You email verification <a href='${emailVerificationLink}'>link</a> </p>`
+        });
 
         return res
             .cookie("access_token", jwtToken, {maxAge: Number(COOKIE_EXPIRES), httpOnly: NODE_ENV === "development" ? true : false})
@@ -104,12 +119,27 @@ export const forgotPassword = async(req, res, next) => {
     try{
         const {email} = req.body;
         const {DOMAIN, SMTP_USER} = process.env;
-        const user = await User.findOne({email:email}).select("_id email resetPasswordToken resetPasswordTokenExpires");
+
+        const user = await User.findOne({
+            email:email
+        })
+        .select("_id email resetPasswordToken resetPasswordTokenExpires");
+        
         const token = user.createResetPasswordToken();
         await user.save();
+        
         const resetPasswordLink = `${DOMAIN}/api/auth/reset-password?resetPasswordToken=${token}`;
-        mailHelper({from:SMTP_USER, to:email, subject:"Reset Password", html:`<p>Your password reset <a href='${resetPasswordLink}'>link</a></p>`});
-        return res.status(200).json({success:true, message:`Reset password link sent to ${email}`});            
+        
+        mailHelper({
+            from:SMTP_USER, 
+            to:email, 
+            subject:"Reset Password", 
+            html:`<p>Your password reset <a href='${resetPasswordLink}'>link</a></p>`
+        });
+
+        return res
+        .status(200)
+        .json({success:true, message:`Reset password link sent to ${email}`});            
     }
     catch(err){
         return next(err);
@@ -193,12 +223,18 @@ export const deactiveAccount = async(req, res, next) => {
         if(!password){
             return next(new CustomError(400, "You have to enter your password"));
         }
-        const user = await User.findOne({_id:req.user.id}).select("_id password isActive");
+
+        const user = await User.findOne({
+            _id:req.user.id
+        })
+        .select("_id password isActive");
         
         if(!bcrypt.compareSync(password, user.password)){
             return next(new CustomError(400, "Invalid password"));
         }
-        await user.update({isActive:false});
+
+        user.isActive = false;
+        await user.save();
 
         return res
         .cookie("access_token", null, {maxAge: Date.now()})
