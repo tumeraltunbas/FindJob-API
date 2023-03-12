@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createToken } from "../helpers/utils/utils.js";
+import { Company } from "./Company.js";
+import { Job } from "./Job.js";
 
 
 const UserSchema = new mongoose.Schema({
@@ -171,6 +173,20 @@ UserSchema.pre("save", function(next){
         next();
     }
     next();
+});
+
+UserSchema.pre("save", async function(next){
+    if(this.isModified("isActive")){
+        
+        if(this.isActive === false){
+        
+            await Company.findOneAndUpdate(
+                { user: req.user.id },
+                {isVisible:false}
+            );
+            
+        }
+    }
 });
 
 export const User = mongoose.model("User", UserSchema);
